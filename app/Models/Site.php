@@ -8,4 +8,8 @@ class Site extends Model
 {
     //
     use HasFactory;
+    protected $fillable = [
+        'name',     // ← 이걸 추가해야 mass assignment 실행됨
+        'domain',
+    ];
 }

@@ -1,7 +1,7 @@
 @extends('layouts.base')
 
 @section('body')
-    <body>
+    <body style="overflow-x: hidden;">
         <main class="content">
             @yield('content1')
             <nav class="navbar navbar-top navbar-expand navbar-dashboard navbar-dark ps-0 pe-2 pb-0 fixed-top">

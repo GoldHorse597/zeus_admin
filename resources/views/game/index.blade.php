@@ -9,7 +9,7 @@
     @if (session('success'))
     <div class="alert alert-success border-left-success alert-dismissible fade show" role="alert">
         {{ session('success') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -24,7 +24,7 @@
     @if (session('error'))
     <div class="alert alert-danger border-left-danger alert-dismissible fade show" role="alert">
         {{ session('error') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -41,7 +41,7 @@
     @endif
 
     <!-- Page Heading -->
-    <div class="py-4">
+    <div class="py-1">
         <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
             <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
                 <li class="breadcrumb-item">
@@ -87,43 +87,96 @@
                         </li>
                     </ul>
                 </form>
-                <table class="table table-hover">
+                <table class="table table-hover" style="text-align:center">
                     <thead class="thead-light">
                         <tr>
-                            <th>ID</th>
+                            <th>번호</th>
                             <th>게임명</th>
                             <th>추가날짜</th>
                             <th>관리</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($games as $game)
+                        @foreach($games as $index => $game)
                             <tr>
-                                <td>{{ $game->id }}</td>
+                                <td>{{ $index + 1 }}</td>
                                 <td>{{ $game->name }}</td>
                                 <td>{{ $game->created_at }}</td>
-                                <div class="btn-group btn-group-sm">
-                                    <a class="btn btn-primary text-white"> 수정 </a>
-                                    <button class="btn btn-danger btn-delete text-white" href="{{route('game.delete', $game->id)}}"> 삭제</button>
-                                </div>
+                                <td class="btn-group-sm">
+                                    <a class="btn btn-success text-white"> 수정 </a>
+                                    <a class="btn btn-danger btn-process text-white"  data-param="delete"  href="{{route('game.process', ['id'=> $game->id, 'param' => 'delete'])}}"> 삭제</a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <div class="mt-3">
-                    {{ $games->appends(request()->except('page'))->links() }}
+                <div class="d-flex justify-content-between align-items-center mt-3">
+
+                    <!-- 왼쪽: 페이지 번호 -->
+                    <div>
+                        {{ $games->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
+                    </div>
+
+                    <!-- 오른쪽: 개수 표시 -->
+                    <div class="text-muted">
+                        {{ $games->firstItem() }} - {{ $games->lastItem() }} / 총 {{ $games->total() }}개
+                    </div>
+
                 </div>
-                <div class="form-group row m-0 mt-4">                            
+                <div class="form-group row m-0 mt-2">                            
                     <div style="text-align:right">
-                        <button type="button" class="btn btn-outline-success" id="btn_save_setting">추가</button>
+                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal-form-add">추가</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="modal-form-add" tabindex="-1" role="dialog" aria-labelledby="modal-form-add" aria-modal="true" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body p-0">
+                    <div class="card p-3 p-lg-4">
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="text-center text-md-center mb-4 mt-md-0">
+                            <h1 class="mb-0 h4">게임 추가</h1>
+                        </div>
+                        <form action="{{ route('game.add') }}" method="POST" class="mt-4">
+                            @csrf
+                            <!-- Form -->
+                            <div class="form-group mb-4">
+                                <label for="email">게임명</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="게임명" name="game_name" autofocus="" required="">
+                                    
+                                </div>
+                            </div>                        
+                            <div style="text-align: center">
+                                <button type="submit" class="btn btn-gray-800">추가</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="processForm" action="" method="post">
+        @csrf
+    </form>
 @endsection
 
 @section('script')
-   
+   @parent
+    <script>       
+        $('.btn-process').click(function (e) {
+            e.preventDefault();
+            let param = $(this).data('param');
+            if (param == 'delete' && !confirm('정말로 삭제하시겠습니까?')) {
+                return;
+            }
+            let form = $('#processForm');
+            let action = $(this).attr('href');
+            form.attr('action', action).submit();
+        });
+    </script>
 @endsection

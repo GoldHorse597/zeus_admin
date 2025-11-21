@@ -7,4 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Auto extends Model
 {
     //
+    protected $fillable = [
+        'name',     // ← 이걸 추가해야 mass assignment 실행됨
+    ];
 }

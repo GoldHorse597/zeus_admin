@@ -39,7 +39,7 @@
         </ul>
       </div>
     @endif
-    <div class="py-4">
+    <div class="py-1">
         <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
             <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
             <li class="breadcrumb-item">
